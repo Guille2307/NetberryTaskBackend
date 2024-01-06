@@ -5,11 +5,10 @@ const { dbConnection } = require("./DB/config");
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 dbConnection();
 
-app.get("/", (req, res) => {
-  return res.json({ ok: true, message: "Hello, world!" });
-});
+app.use("/users", require("./routes/users"));
 
 app.listen(process.env.PORT, () => {
   console.log("listening on port " + process.env.PORT);
