@@ -8,6 +8,7 @@ const {
 const { check } = require("express-validator");
 const { validateFields } = require("../middlewares/validateFields");
 const { validateJWT } = require("../middlewares/validateJWT");
+
 const router = Router();
 
 router.get("/", validateJWT, getUsers);

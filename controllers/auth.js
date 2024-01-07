@@ -34,4 +34,17 @@ const login = async (req, res = response) => {
   }
 };
 
-module.exports = { login };
+const renewToken = async (req, res = response) => {
+  const uid = req.uid;
+  //Obtener usuario por uid
+  const user = await User.findById(uid);
+  //Generar token-JWT
+  const token = await createJWT(uid);
+  res.json({
+    ok: true,
+    token,
+    user,
+  });
+};
+
+module.exports = { login, renewToken };

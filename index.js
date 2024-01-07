@@ -10,6 +10,8 @@ dbConnection();
 
 app.use("/users", require("./routes/users"));
 app.use("/login", require("./routes/auth"));
+app.use("/tasks", require("./routes/tasks"));
+app.use("/tags", require("./routes/tags"));
 
 app.listen(process.env.PORT, () => {
   console.log("listening on port " + process.env.PORT);
