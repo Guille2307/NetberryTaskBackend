@@ -9,6 +9,7 @@ app.use(express.json());
 dbConnection();
 
 app.use("/users", require("./routes/users"));
+app.use("/login", require("./routes/auth"));
 
 app.listen(process.env.PORT, () => {
   console.log("listening on port " + process.env.PORT);
