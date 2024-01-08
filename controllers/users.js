@@ -4,8 +4,14 @@ const bcrypt = require("bcryptjs");
 const { createJWT } = require("../helpers/jwt");
 
 const getUsers = async (req, res) => {
-  const users = await User.find();
+  const users = await User.find().populate("task");
   return res.json({ ok: true, users });
+};
+
+const getUserById = async (req, res) => {
+  const id = req.params.id;
+  const user = await User.findById(id).populate("task");
+  return res.json({ ok: true, user });
 };
 
 const createUser = async (req, res = response) => {
@@ -94,4 +100,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, createUser, updateUser, deleteUser };
+module.exports = { getUsers, getUserById, createUser, updateUser, deleteUser };

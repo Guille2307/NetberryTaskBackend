@@ -15,11 +15,12 @@ const TaskSchema = Schema(
     },
     tags: [
       {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: "Tag",
       },
     ],
     createdBy: { required: true, type: Schema.Types.ObjectId, ref: "User" },
-    assignedto: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    assignedTo: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,

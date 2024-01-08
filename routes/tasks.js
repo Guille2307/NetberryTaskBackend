@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const {
   getTasks,
+  getTaskById,
   createTasks,
   updateTasks,
   deleteTasks,
@@ -11,7 +12,8 @@ const { validateFields } = require("../middlewares/validateFields");
 
 const router = Router();
 
-router.get("/", getTasks);
+router.get("/", validateJWT, getTasks);
+router.get("/:id", validateJWT, getTaskById);
 router.post(
   "/",
   [
@@ -22,7 +24,7 @@ router.post(
   ],
   createTasks
 );
-router.patch("/:id", updateTasks);
-router.delete("/:id", deleteTasks);
+router.patch("/:id", validateJWT, updateTasks);
+router.delete("/:id", validateJWT, deleteTasks);
 
 module.exports = router;

@@ -17,7 +17,7 @@ const UserSchema = Schema({
   img: {
     type: String,
   },
-  task: [{ type: String }],
+  task: [{ type: Schema.Types.ObjectId, ref: "Task" }],
 });
 
 // This function renames the id to uid and excludes the document version and password

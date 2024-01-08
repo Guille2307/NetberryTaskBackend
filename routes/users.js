@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const {
   getUsers,
+  getUserById,
   createUser,
   updateUser,
   deleteUser,
@@ -34,6 +35,7 @@ router.put(
   ],
   updateUser
 );
+router.get("/:id", [validateJWT], getUserById);
 
 router.delete("/:id", validateJWT, deleteUser);
 
