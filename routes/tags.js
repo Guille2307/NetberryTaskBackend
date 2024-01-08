@@ -24,7 +24,15 @@ router.post(
   ],
   createTags
 );
-router.patch("/:id", updateTags);
+router.patch(
+  "/:id",
+  [
+    validateJWT,
+    check("name", "Debe tener un nombre").not().isEmpty(),
+    validateFields,
+  ],
+  updateTags
+);
 router.delete("/:id", deleteTags);
 
 module.exports = router;

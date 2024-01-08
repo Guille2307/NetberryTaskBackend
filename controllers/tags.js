@@ -39,9 +39,20 @@ const createTags = async (req, res = response) => {
     res.status(500).json({ ok: false, message: "Hable con el Administrador" });
   }
 };
-const updateTags = (req, res = response) => {
-  return res.json({ ok: true, message: "updateTags" });
+const updateTags = async (req, res = response) => {
+  const id = req.params.id;
+  const tag = await Tag.findById(id);
+  if (!tag) {
+    return res.status(404).json({ ok: false, message: "No exite este tag" });
+  }
+  const changeTag = req.body;
+  const updatedTag = await Tag.findByIdAndUpdate(id, changeTag, { new: true });
+  return res.json({ ok: true, message: "updateTags", updatedTag });
 };
+
+// Para efectos del proyecto no se utilizará
+// este endpoint pero queda aquí para de ser necesario hacer uso del mismo
+
 const deleteTags = (req, res = response) => {
   return res.json({ ok: true, message: "deleteTags" });
 };

@@ -24,7 +24,16 @@ router.post(
   ],
   createTasks
 );
-router.patch("/:id", validateJWT, updateTasks);
+router.patch(
+  "/:id",
+  [
+    validateJWT,
+    check("title", "Debe tener un titulo").not().isEmpty(),
+    check("description", "Debe tener una descripción").not().isEmpty(),
+    validateFields,
+  ],
+  updateTasks
+);
 router.delete("/:id", validateJWT, deleteTasks);
 
 module.exports = router;
