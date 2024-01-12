@@ -1,15 +1,11 @@
 const { response } = require("express");
 const Task = require("../models/task");
+const User = require("../models/users");
 
 const getTasks = async (req, res = response) => {
-  const desde = Number(req.query.desde) || 0;
   const [task, total] = await Promise.all([
-    Task.find()
-      .populate("createdBy")
-      .populate("tags")
-      .populate("assignedTo")
-      .skip(desde)
-      .limit(5),
+    Task.find().populate("createdBy").populate("tags").populate("assignedTo"),
+
     Task.countDocuments(),
   ]);
   return res.json({ ok: true, task, total });
@@ -17,18 +13,29 @@ const getTasks = async (req, res = response) => {
 
 const getTaskById = async (req, res) => {
   const id = req.params.id;
+  const uid = req.uid;
   const task = await Task.findById(id)
     .populate("createdBy")
     .populate("tags")
     .populate("assignedTo");
-  return res.json({ ok: true, task });
+  const seenTas = await Task.findByIdAndUpdate(
+    id,
+    { seen: true },
+    { new: true }
+  );
+  return res.json({ ok: true, seenTas });
 };
 
 const createTasks = async (req, res = response) => {
   const uid = req.uid;
-  const task = new Task({ createdBy: uid, ...req.body });
+  const task = new Task({ createdBy: uid, seen: false, ...req.body });
+  const assignedTo = req.body.assignedTo;
 
   try {
+    const addTaskToUser = await User.findByIdAndUpdate(assignedTo, {
+      $push: { task: task },
+    });
+
     await task.save();
     return res.json({ ok: true, task });
   } catch (error) {
@@ -40,9 +47,13 @@ const createTasks = async (req, res = response) => {
 const updateTasks = async (req, res = response) => {
   const id = req.params.id;
   const uid = req.uid;
+  const assignedTo = req.body.assignedTo;
   try {
     const task = await Task.findById(id);
 
+    const addTaskToUser = await User.findByIdAndUpdate(assignedTo, {
+      $push: { task: task },
+    });
     if (!task) {
       return res.status(404).json({
         ok: false,
@@ -52,11 +63,13 @@ const updateTasks = async (req, res = response) => {
     const changesTask = {
       ...req.body,
       createdBy: uid,
+      seen: true,
     };
 
     const updateTask = await Task.findByIdAndUpdate(id, changesTask, {
       new: true,
     });
+
     return res.json({ ok: true, id, message: "Updated Task", updateTask });
   } catch (error) {
     console.log(error);

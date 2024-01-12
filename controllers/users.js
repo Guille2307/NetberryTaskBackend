@@ -4,13 +4,20 @@ const bcrypt = require("bcryptjs");
 const { createJWT } = require("../helpers/jwt");
 
 const getUsers = async (req, res) => {
-  const users = await User.find().populate("task");
+  const users = await User.find().populate({
+    path: "task",
+    populate: { path: "tags" },
+  });
   return res.json({ ok: true, users });
 };
 
 const getUserById = async (req, res) => {
   const id = req.params.id;
-  const user = await User.findById(id).populate("task");
+  const user = await User.findById(id).populate({
+    path: "task",
+    populate: { path: "tags" },
+  });
+
   return res.json({ ok: true, user });
 };
 

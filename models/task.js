@@ -19,8 +19,12 @@ const TaskSchema = Schema(
         ref: "Tag",
       },
     ],
+    seen: {
+      type: Boolean,
+    },
+
     createdBy: { required: true, type: Schema.Types.ObjectId, ref: "User" },
-    assignedTo: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,
