@@ -9,13 +9,15 @@ const {
 const { check } = require("express-validator");
 const { validateFields } = require("../middlewares/validateFields");
 const { validateJWT } = require("../middlewares/validateJWT");
-
+const cors = require("cors");
+const { corsOptions } = require("../cors/corsOption");
 const router = Router();
 
 router.get("/", validateJWT, getUsers);
 
 router.post(
   "/",
+  cors(corsOptions),
   [
     check("name", "el nombre es obligatorio").not().isEmpty(),
     check("password", "el password es obligatorio").not().isEmpty(),
@@ -27,6 +29,7 @@ router.post(
 
 router.put(
   "/:id",
+  cors(corsOptions),
   [
     validateJWT,
     check("name", "el nombre es obligatorio").not().isEmpty(),
@@ -35,8 +38,8 @@ router.put(
   ],
   updateUser
 );
-router.get("/:id", [validateJWT], getUserById);
+router.get("/:id", cors(corsOptions), [validateJWT], getUserById);
 
-router.delete("/:id", validateJWT, deleteUser);
+router.delete("/:id", cors(corsOptions), validateJWT, deleteUser);
 
 module.exports = router;

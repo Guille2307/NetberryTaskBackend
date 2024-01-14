@@ -9,13 +9,15 @@ const {
   updateTags,
   deleteTags,
 } = require("../controllers/tags");
-
+const cors = require("cors");
+const { corsOptions } = require("../cors/corsOption");
 const router = Router();
 
-router.get("/", validateJWT, getTags);
-router.get("/:id", validateJWT, getTagById);
+router.get("/", cors(corsOptions), validateJWT, getTags);
+router.get("/:id", cors(corsOptions), validateJWT, getTagById);
 router.post(
   "/",
+  cors(corsOptions),
   [
     validateJWT,
     check("name", "Debe tener un nombre").not().isEmpty(),
@@ -26,6 +28,7 @@ router.post(
 );
 router.patch(
   "/:id",
+  cors(corsOptions),
   [
     validateJWT,
     check("name", "Debe tener un nombre").not().isEmpty(),
@@ -33,6 +36,6 @@ router.patch(
   ],
   updateTags
 );
-router.delete("/:id", deleteTags);
+router.delete("/:id", cors(corsOptions), deleteTags);
 
 module.exports = router;
