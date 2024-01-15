@@ -2,9 +2,9 @@ const { Router } = require("express");
 const {
   getTasks,
   getTaskById,
-  createTasks,
-  updateTasks,
-  deleteTasks,
+  createTask,
+  updateTask,
+  deleteTask,
 } = require("../controllers/tasks");
 const { validateJWT } = require("../middlewares/validateJWT");
 const { check } = require("express-validator");
@@ -24,7 +24,7 @@ router.post(
     check("description", "Debe tener una descripción").not().isEmpty(),
     validateFields,
   ],
-  createTasks
+  createTask
 );
 router.patch(
   "/:id",
@@ -35,8 +35,8 @@ router.patch(
     check("description", "Debe tener una descripción").not().isEmpty(),
     validateFields,
   ],
-  updateTasks
+  updateTask
 );
-router.delete("/:id", cors(corsOptions), validateJWT, deleteTasks);
+router.delete("/:id", cors(corsOptions), validateJWT, deleteTask);
 
 module.exports = router;

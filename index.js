@@ -6,6 +6,7 @@ const { dbConnection } = require("./DB/config");
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 dbConnection();
 
 app.use("/users", require("./routes/users"));

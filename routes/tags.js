@@ -21,7 +21,7 @@ router.post(
   [
     validateJWT,
     check("name", "Debe tener un nombre").not().isEmpty(),
-    check("tasks", "Debe tener una tarea con un id de mongo").isMongoId(),
+
     validateFields,
   ],
   createTags

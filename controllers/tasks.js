@@ -3,12 +3,17 @@ const Task = require("../models/task");
 const User = require("../models/users");
 
 const getTasks = async (req, res = response) => {
-  const [task, total] = await Promise.all([
-    Task.find().populate("createdBy").populate("tags").populate("assignedTo"),
+  let searchParams = {};
+  const assignedTo = req.query.assignedTo;
+  if (assignedTo) {
+    searchParams.assignedTo = assignedTo;
+  }
+  const tasks = await Task.find(searchParams)
+    .populate("createdBy")
+    .populate("tags")
+    .populate("assignedTo");
 
-    Task.countDocuments(),
-  ]);
-  return res.json({ ok: true, task, total });
+  return res.json({ ok: true, tasks });
 };
 
 const getTaskById = async (req, res) => {
@@ -18,24 +23,14 @@ const getTaskById = async (req, res) => {
     .populate("createdBy")
     .populate("tags")
     .populate("assignedTo");
-  const seenTas = await Task.findByIdAndUpdate(
-    id,
-    { seen: true },
-    { new: true }
-  );
-  return res.json({ ok: true, seenTas });
+  await Task.findByIdAndUpdate(id, { seen: true }, { new: true });
+  return res.json({ ok: true, task });
 };
 
-const createTasks = async (req, res = response) => {
+const createTask = async (req, res = response) => {
   const uid = req.uid;
   const task = new Task({ createdBy: uid, seen: false, ...req.body });
-  const assignedTo = req.body.assignedTo;
-
   try {
-    const addTaskToUser = await User.findByIdAndUpdate(assignedTo, {
-      $push: { task: task },
-    });
-
     await task.save();
     return res.json({ ok: true, task });
   } catch (error) {
@@ -44,16 +39,23 @@ const createTasks = async (req, res = response) => {
   }
 };
 
-const updateTasks = async (req, res = response) => {
+const updateTask = async (req, res = response) => {
   const id = req.params.id;
   const uid = req.uid;
-  const assignedTo = req.body.assignedTo;
   try {
     const task = await Task.findById(id);
+    const user = await User.findById(uid);
 
-    const addTaskToUser = await User.findByIdAndUpdate(assignedTo, {
-      $push: { task: task },
-    });
+    if (task.assignedTo._id !== user._id) {
+      task.assignedTo = user;
+      task.save();
+    } else {
+      return res.status(400).json({
+        ok: false,
+        message: "La tares ya esta asignada a este usuario",
+      });
+    }
+
     if (!task) {
       return res.status(404).json({
         ok: false,
@@ -66,11 +68,15 @@ const updateTasks = async (req, res = response) => {
       seen: true,
     };
 
-    const updateTask = await Task.findByIdAndUpdate(id, changesTask, {
+    const updatedTask = await Task.findByIdAndUpdate(id, changesTask, {
       new: true,
     });
-
-    return res.json({ ok: true, id, message: "Updated Task", updateTask });
+    return res.json({
+      ok: true,
+      id,
+      message: "Updated Task",
+      updatedTask,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -80,7 +86,7 @@ const updateTasks = async (req, res = response) => {
   }
 };
 
-const deleteTasks = async (req, res = response) => {
+const deleteTask = async (req, res = response) => {
   const id = req.params.id;
 
   try {
@@ -107,7 +113,7 @@ const deleteTasks = async (req, res = response) => {
 module.exports = {
   getTasks,
   getTaskById,
-  createTasks,
-  updateTasks,
-  deleteTasks,
+  createTask,
+  updateTask,
+  deleteTask,
 };

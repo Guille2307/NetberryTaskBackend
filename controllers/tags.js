@@ -27,9 +27,9 @@ const createTags = async (req, res = response) => {
     }
 
     const task = await Task.findById(tag.tasks);
-
+    console.log(task);
     const addTag = await Task.findByIdAndUpdate(task, {
-      $push: { tags: tag.id },
+      $push: { tags: tag._id },
     });
     await tag.save();
 

@@ -5,8 +5,10 @@ const TagSchema = Schema({
     type: String,
     require: true,
   },
-
-  tasks: [{ require: true, type: Schema.Types.ObjectId, ref: "Task" }],
+  tasks: {
+    type: String,
+    tasks: [{ type: Schema.Types.ObjectId, ref: "Task" }],
+  },
 });
 
 module.exports = model("Tag", TagSchema);

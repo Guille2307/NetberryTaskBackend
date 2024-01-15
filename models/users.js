@@ -20,12 +20,4 @@ const UserSchema = Schema({
   task: [{ type: Schema.Types.ObjectId, ref: "Task" }],
 });
 
-// This function renames the id to uid and excludes the document version and password
-
-UserSchema.method("toJSON", function () {
-  const { __v, _id, password, ...object } = this.toObject();
-  object.uid = _id;
-  return object;
-});
-
 module.exports = model("User", UserSchema);
