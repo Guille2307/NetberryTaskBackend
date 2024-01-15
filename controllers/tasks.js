@@ -46,7 +46,6 @@ const updateTask = async (req, res = response) => {
     const task = await Task.findById(id);
     const user = await User.findById(uid);
 
-    console.log(task, user);
     if (task.assignedTo !== user._id) {
       task.assignedTo = user;
       task.save();
